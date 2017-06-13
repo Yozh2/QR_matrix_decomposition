@@ -152,8 +152,8 @@ mat matrix_new(int m, int n)
 {
 	int i;
 	mat x = malloc(sizeof(mat_t));
-	x->v = malloc(sizeof(double) * m);
-	x->v[0] = calloc(sizeof(double), m * n);
+	x->v = (double **)malloc(sizeof(double) * m);
+	x->v[0] = (double *)calloc(sizeof(double), m * n);
 	for (i = 0; i < m; i++)
 		x->v[i] = x->v[0] + n * i;
 	x->m = m;
