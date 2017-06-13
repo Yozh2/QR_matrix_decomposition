@@ -57,7 +57,7 @@ void matrix_transpose(mat m);
 // PURPOSE:			Transpose the matrix (A[i][j] = A[j][i])
 // RETURN VALUE:	Nothing
 
-mat matrix_copy(int n, double a[][n], int m);
+mat matrix_copy(int n, double **a, int m);
 // PURPOSE:			Copy the matrix given w/ memory allocation
 // RETURN VALUE:	The new matrix which is a copy of the matrix given
 
@@ -176,7 +176,7 @@ void matrix_transpose(mat m)
 	}
 }
 
-mat matrix_copy(int n, double a[][n], int m)
+mat matrix_copy(int n, double **a, int m)
 {
 	mat x = matrix_new(m, n);
 	for (int i = 0; i < m; i++)
@@ -276,17 +276,22 @@ int main()
 	// M - num of strings
 	// N - num of columns
 
-	unsigned M, N, i, k;
+ 	unsigned M, N, i, k;
 
 	FILE * input = fopen("./A.txt", "r");	// Open input file
 	fscanf (input, "%d %d", &M, &N);		// read M and N
-	double inmat[M][N];						// input matrix
 
-	for (i = 0; i < M; i++)					// Read the matrix coefficients
-		for (k = 0; k < N; k++)				// from the input file
+ 	// Allocate memory for input matrix (dynamic) MxN
+	// and read matrix coefficients from the input file
+	double ** inmat = (double**)malloc(M*sizeof(double*));
+	for (i = 0; i < M; i++)
+	{
+		inmat[i] = (double*)malloc(N*sizeof(double));
+		for (k = 0; k < N; k++)
 		{
 			fscanf(input, "%lf", &inmat[i][k]);
 		}
+	}
 	fclose (input);
 
 	mat R, Q;
@@ -305,6 +310,10 @@ int main()
 	matrix_delete(R);
 	matrix_delete(Q);
 	matrix_delete(m);
+
+	// for (i = 0; i < M; i++)
+	// 	free(inmat[i]);
+	free(inmat);
 	return 0;
 }
 
