@@ -281,23 +281,21 @@ int main()
 	FILE * input = fopen("./A.txt", "r");	// Open input file
 	fscanf (input, "%d %d", &M, &N);		// read M and N
 
- 	// Allocate memory for input matrix (dynamic) MxN
-	// and read matrix coefficients from the input file
-	double ** inmat = (double**)malloc(M*sizeof(double*));
+	// Allocate memory for input matrix (dynamic) MxN
+	mat inmat = matrix_new(M, N);
+
+	// read matrix coefficients from the input file
 	for (i = 0; i < M; i++)
 	{
-		inmat[i] = (double*)malloc(N*sizeof(double));
 		for (k = 0; k < N; k++)
 		{
-			fscanf(input, "%lf", &inmat[i][k]);
+			fscanf(input, "%lf", &inmat->v[i][k]);
 		}
 	}
 	fclose (input);
 
 	mat R, Q;
-	mat x = matrix_copy(N, inmat, M);
-	//mat x = matrix_copy(3, in, 5);
-	householder(x, &R, &Q);
+	householder(inmat, &R, &Q);
 
 	puts("Q"); matrix_show(Q);
 	puts("R"); matrix_show(R);
@@ -306,14 +304,10 @@ int main()
 	mat m = matrix_mul(Q, R);
 	puts("Q * R"); matrix_show(m);
 
-	matrix_delete(x);
 	matrix_delete(R);
 	matrix_delete(Q);
 	matrix_delete(m);
-
-	// for (i = 0; i < M; i++)
-	// 	free(inmat[i]);
-	free(inmat);
+	matrix_delete(inmat);
 	return 0;
 }
 
