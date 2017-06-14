@@ -99,7 +99,7 @@ void householder(mat m, mat *R, mat *Q)
 	mat *q = (mat*)malloc(m->m * sizeof(mat));
 	mat z = m, z1;
 
-	int k;
+	int k, i;
 	for (k = 0; k < m->n && k < m->m - 1; k++) {
 
 		double *e = (double*)malloc(m->m * sizeof(double));
@@ -113,7 +113,7 @@ void householder(mat m, mat *R, mat *Q)
 		a = vnorm(x, m->m);
 		if (m->v[k][k] > 0) a = -a;
 
-		int i;
+
 		for (i = 0; i < m->m; i++)
 			e[i] = (i == k) ? 1 : 0;
 
@@ -130,7 +130,6 @@ void householder(mat m, mat *R, mat *Q)
 	matrix_delete(z);
 	*Q = q[0];
 	*R = matrix_mul(q[0], m);
-	int i;
 	for (i = 1; i < m->n && i < m->m - 1; i++) {
 		z1 = matrix_mul(q[i], *Q);
 		if (i > 1) matrix_delete(*Q);
@@ -151,7 +150,7 @@ void householder(mat m, mat *R, mat *Q)
 mat matrix_new(int m, int n)
 {
 	int i;
-	mat x = malloc(sizeof(mat_t));
+	mat x = (mat)malloc(sizeof(mat_t));
 	x->v = (double **)malloc(sizeof(double) * m);
 	x->v[0] = (double *)calloc(sizeof(double), m * n);
 	for (i = 0; i < m; i++)
@@ -193,8 +192,9 @@ mat matrix_copy(int n, double **a, int m)
 mat matrix_mul(mat x, mat y)
 {
 	int i, j, k;
+	mat r;
 	if (x->n != y->m) return 0;
-	mat r = matrix_new(x->m, y->n);
+	r = matrix_new(x->m, y->n);
 	for (i = 0; i < x->m; i++)
 		for (j = 0; j < y->n; j++)
 			for (k = 0; k < x->n; k++)
@@ -290,12 +290,14 @@ int main()
 	// N - num of columns
 
  	unsigned M, N, i, k;
-
+	mat inmat;
+	mat R, Q;
+	mat m;
 	FILE * input = fopen("./A.txt", "r");	// Open input file
 	fscanf (input, "%d %d", &M, &N);		// read M and N
 
 	// Allocate memory for input matrix (dynamic) MxN
-	mat inmat = matrix_new(M, N);
+	inmat = matrix_new(M, N);
 
 	// read matrix coefficients from the input file
 	for (i = 0; i < M; i++)
@@ -307,14 +309,14 @@ int main()
 	}
 	fclose (input);
 
-	mat R, Q;
+
 	householder(inmat, &R, &Q);
 
 	puts("Q"); matrix_show(Q);
 	puts("R"); matrix_show(R);
 
 	// to show their product is the input matrix
-	mat m = matrix_mul(Q, R);
+	m = matrix_mul(Q, R);
 	puts("Q * R"); matrix_show(m);
 
 	matrix_delete(R);
@@ -329,35 +331,29 @@ int main()
 //==============================================================================
 /*
 	Input file A.txt contains:
-
 	5 3
 	12.000  -51.000    4.000
 	 6.000  167.000  -68.000
 	-4.000   24.000  -41.000
 	-1.000    1.000   -0.000
 	 2.000   -0.000    3.000
-
     Output:
-
     Q:
     0.846   -0.391    0.343    0.082    0.078
     0.423    0.904   -0.029    0.026    0.045
    -0.282    0.170    0.933   -0.047   -0.137
    -0.071    0.014   -0.001    0.980   -0.184
     0.141   -0.017   -0.106   -0.171   -0.969
-
     R:
    14.177   20.667  -13.402
    -0.000  175.043  -70.080
     0.000    0.000  -35.202
    -0.000   -0.000   -0.000
     0.000    0.000   -0.000
-
     Q * R:
    12.000  -51.000    4.000
     6.000  167.000  -68.000
    -4.000   24.000  -41.000
    -1.000    1.000   -0.000
     2.000   -0.000    3.000
-
 */
