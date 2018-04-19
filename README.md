@@ -61,5 +61,5 @@ after running `./qr` we will get output
    -1.000    1.000   -0.000
     2.000   -0.000    3.000
 ```
-## Licence
+## License
 This code is free for any use and anyone can modify it as he wants.
